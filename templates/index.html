@@ -1,461 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <title>Streaming</title>
+    <title>Video Analysis App</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Add other CSS files or styles if needed -->
     <style>
-        body {
-            background-color: #e6e6fa;
-            font-family: Arial, sans-serif;
-            color: #333;
-        }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
 
-        .container {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px;
-        }
+      .container-main {
+        flex: 1;
+        padding-bottom: 60px; /* Height of the footer */
+      }
 
-        .frame {
-            width: 60%;
-            margin-right: 20px;
-            background-color: #f9e3f9;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+      .sticky-footer {
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        background-color: #343a40; /* Dark color for the footer */
+        color: white;
+        padding: 15px;
+        text-align: center;
+      }
 
-        .frame form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .frame label {
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .frame input {
-            margin-bottom: 16px;
-            padding: 8px;
-        }
-
-        .frame input[type="submit"] {
-            background-color: #9370db;
-            color: white;
-            border: #20bba9;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .video {
-            display: flex;
-            justify-content: center;
-        }
-
-        .video img {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            border: 2px solid #9370db;
-        }
-
-        .sidebars {
-            height: 300px;
-            /* Adjust the height as needed */
-            overflow-y: auto;
-            /* Enable vertical scrolling */
-            width: 30%;
-            background-color: #f9e3f9;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebars h2 {
-            font-size: 1.5em;
-            margin-bottom: 16px;
-            color: #333;
-        }
-
-        .violence-list {
-            width: max-content;
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .violence-list-item {
-            width: max-content;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        /* Styles for the snackbar */
-        #snackbar {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 2px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            bottom: 30px;
-            font-size: 17px;
-        }
-
-        #snackbar.show {
-            visibility: visible;
-            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            display: flex;
-            justify-content: flex-end;
-            /* Align to the right side */
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #9370db;
-            color: #fff;
-        }
-
-        .navbar-buttons {
-            display: flex;
-        }
-
-        .navbar-buttons button {
-            padding: 8px 12px;
-            margin-left: 10px;
-            /* Adjust the margin as needed */
-            background-color: #dcd6e2;
-            color: #2027eb;
-            border-radius: 25px;
-            border-color: #989bf8;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* Navbar link styles */
-        .nav-link {
-            text-decoration: none;
-        }
-
-        /* Hover effect styles */
-        .navbar-buttons button:hover,
-        .navbar-buttons .nav-link:hover button {
-            background-color: #2027eb;
-            color: #fff;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-
-
-        /* Sidebar styles */
-        .sidebar {
-            position: absolute;
-            top: 0;
-            left: -350px;
-            width: 270px;
-            height: 100%;
-            background-color: #9370db;
-            color: #333;
-            padding: 5px;
-            transition: 0.005s;
-            /* Smooth transition */
-        }
-
-        .sidebar h2 {
-            font-size: 1.5em;
-            margin-bottom: 16px;
-        }
-
-        .sidebar button {
-            padding: 8px 12px;
-            background-color: #8a2be2;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .sidebar .profile-container {
-            width: 150px;
-            height: 150px;
-            overflow: hidden;
-            /* border-radius: 50%; */
-            margin: 10px 0;
-        }
-
-        .sidebar .profile-pic {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background-color: #9370db;
-            color: #fff;
-        }
-
-        .footer-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .footer-icons {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-icons a {
-            color: #fff;
-        }
-
-        .footer-label {
-            margin-left: 20px;
-        }
-
-        .footer-label p {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-
-        @-webkit-keyframes fadein {
-            from {
-                bottom: 0;
-                opacity: 0;
-            }
-
-            to {
-                bottom: 30px;
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadein {
-            from {
-                bottom: 0;
-                opacity: 0;
-            }
-
-            to {
-                bottom: 30px;
-                opacity: 1;
-            }
-        }
-
-        @-webkit-keyframes fadeout {
-            from {
-                bottom: 30px;
-                opacity: 1;
-            }
-
-            to {
-                bottom: 0;
-                opacity: 0;
-            }
-        }
-
-        @keyframes fadeout {
-            from {
-                bottom: 30px;
-                opacity: 1;
-            }
-
-            to {
-                bottom: 0;
-                opacity: 0;
-            }
-        }
+      .time-container {
+        position: fixed;
+        top: 0;
+        right: 0;
+        padding: 15px;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.8
+        ); /* Semi-transparent white background */
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 10px;
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Violence Detection In Real Time</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#projects">More Projects</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-<body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <div class="navbar-buttons">
-            <button onclick="toggleSidebar('aboutUsSidebar')">About Us</button>
-            <a href="#" class="nav-link" id="projects-link"><button>Projects</button></a>
-            <a href="#" class="nav-link" id="portfolio-link"><button>Portfolio</button></a>
+    <div class="container-main">
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Video Input</h2>
+          <form method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.video_url.label(class="form-control-label") }} {{
+              form.video_url(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.video_file.label(class="form-control-label") }} {{
+              form.video_file(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.submit(class="btn btn-primary") }}
+            </div>
+          </form>
         </div>
-    </div>
-
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="aboutUsSidebar">
-        <h2>About Me</h2>
-        <div class="profile-container">
-            <i class="fas fa-user-circle fa-5x"></i>
+        <div class="col-md-6">
+          <h2>Video Display</h2>
+          <img
+            src="{{ url_for('video_feed', video_source=video_source) }}"
+            class="img-fluid"
+            alt="Video"
+          />
         </div>
-        <p>Saurabh Singh</p>
-        <p>👋 Welcome to my LinkedIn profile! I'm a passionate Data Scientist and Machine Learning enthusiast with a
-            strong background
-            in developing data-driven solutions and managing end-to-end projects. I specialize in MLOps, version
-            control, and monitoring
-            using tools such as MLFlow, Git, Docker, and more.</p>
-        <button onclick="toggleSidebar('aboutUsSidebar')">Close</button>
-    </div>
-
-    <center>
-        <h1 style="text-shadow: -1px -1px blue; text-decoration: underline">
-            Violence Detection On Live Feed
-        </h1>
         <br />
-    </center>
-    <div class="container">
-        <div class="frame">
-            <form action="{{ url_for('process_video') }}" method="post" enctype="multipart/form-data"
-                class="upload-form">
-                <div class="upload-container">
-                    <label for="video_file">Upload Video:</label>
-                    <input type="file" name="video_file" accept=".mp4, .avi" />
-                </div>
-
-                <div class="url-container">
-                    <label for="video_url">Enter Video URL:</label>
-                    <input type="text" name="video_url" />
-                </div>
-
-                <input type="submit" value="Submit" />
-            </form>
-
-            <div class="video">
-                <img src="{{ url_for('video_feed') }}" />
-            </div>
+        <div class="time-container mt-3">
+          <h3>Violence Detection Time</h3>
+          <p id="violence-message"></p>
+          <p id="violence-timestamp"></p>
         </div>
-
-        <div class="sidebars">
-            <h2>Violence Detections</h2>
-            <ul class="violence-list" id="violence-list">
-                {% for detection in violence_detections %}
-                <li class="violence-list-item">
-                    <h8>Time Stamp: {{ detection.timestamp }} msec.</h8>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <!-- Snackbar for error messages -->
-        <div id="snackbar" class="error">Error: Video couldn't be loaded</div>
+      </div>
     </div>
 
-    <!-- Include Socket.IO -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <footer class="sticky-footer">
+      <div class="container">
+        <p class="mb-0">Connect with me:</p>
+        <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-github"></i></a>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Connect to Socket.IO server
-        var socket = io.connect(
-            "http://" + document.domain + ":" + location.port
-        );
+      function updateTimeAndMessage(message, timestamp) {
+        document.getElementById("violence-message").innerText =
+          "Message: " + message;
+        document.getElementById("violence-timestamp").innerText =
+          "Timestamp: " + timestamp;
+      }
 
-        // Listen for 'update_sidebar' event
-        socket.on("update_sidebar", function (data) {
-            // Update violence list dynamically
-            var violenceList = document.getElementById("violence-list");
-            violenceList.innerHTML = "";
-            data.violence_detections.forEach(function (detection) {
-                var listItem = document.createElement("li");
-                listItem.className = "violence-list-item";
-                var link = document.createElement("a");
-                //   link.href = detection.video_url;
-                link.textContent = "Time Stamp : " + detection.timestamp + " msec.";
-                listItem.appendChild(link);
-                violenceList.appendChild(listItem);
-            });
-        });
+      function simulateViolenceDetection() {
+        // Replace the following line with the actual logic to detect violence
+        var isViolenceDetected = Math.random() < 0.1; // Example: Simulate violence detection with a 10% chance
 
-        // Listen for 'video_error' event
-        socket.on("video_error", function () {
-            // Display an error message when the video can't be loaded
-            var snackbar = document.getElementById("snackbar");
-            snackbar.textContent = "Error: Video couldn't be loaded";
-            snackbar.className = "show error";
-            setTimeout(function () {
-                snackbar.className = snackbar.className.replace("show", "");
-            }, 3000);
-        });
+        if (isViolenceDetected) {
+          var message = "Violence detected here ...";
+          var timestamp = new Date().toLocaleTimeString(); // Example: Get the current time
 
-        // Listen for 'video_end' event
-        socket.on("video_end", function () {
-            // Display a message when the video ends
-            var snackbar = document.getElementById("snackbar");
-            snackbar.textContent = "Video Ended";
-            snackbar.className = "show";
-            setTimeout(function () {
-                snackbar.className = snackbar.className.replace("show", "");
-            }, 3000);
-        });
-
-        // Function to end the video
-        function endVideo() {
-            fetch("/end_video", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        // Emit 'video_end' event
-                        socket.emit("video_end");
-                    }
-                });
+          // Call the function to update the time container
+          updateTimeAndMessage(message, timestamp);
         }
-        function toggleSidebar(sidebarId) {
-            var sidebar = document.getElementById(sidebarId);
-            if (sidebar.style.left === "0px") {
-                sidebar.style.left = "-350px";
-            } else {
-                sidebar.style.left = "0px";
-            }
-        }
-    </script>
-    </script>
-    <!-- Snackbar for displaying messages -->
-    <div id="snackbar"></div>
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-content">
-            <div class="footer-icons">
-                <a href="https://www.linkedin.com/" target="_blank">
-                    <i class="fab fa-linkedin fa-2x"></i>
-                </a>
-                <a href="https://github.com/" target="_blank">
-                    <i class="fab fa-github fa-2x"></i>
-                </a>
-            </div>
-            <div class="footer-label">
-                <p>@SaurabhSingh 2023</p>
-            </div>
-        </div>
-    </div>
+      }
 
-</body>
-
+      setInterval(simulateViolenceDetection, 5000);
+    </script>
+    <!-- Add other JavaScript files if needed -->
+  </body>
 </html>
