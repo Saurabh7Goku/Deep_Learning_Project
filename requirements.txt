@@ -8,3 +8,4 @@ tensorflow
 Gunicorn
 python-socketio
 Flask-WTF
+pip install imageio
