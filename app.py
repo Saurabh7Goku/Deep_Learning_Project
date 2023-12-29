@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired
 import cv2
 import numpy as np
 import imageio
-from functions.invisibleMinds import pred_fight, videoFightModel3
+from fun.invisibleMinds import pred_fight, videoFightModel3
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '4cf659de047f5ec423725d1574c942e9'
