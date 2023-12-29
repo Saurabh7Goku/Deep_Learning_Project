@@ -9,4 +9,4 @@ Gunicorn
 python-socketio
 Flask-WTF
 imageio
-imageio-ffmpeg
+imageio[ffmpeg]
