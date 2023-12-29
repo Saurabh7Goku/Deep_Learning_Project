@@ -28,62 +28,62 @@ def resize(frame, size=(160, 160)):
     return cv2.resize(frame, size)
 
 def gen(video_source, model):
-    vid = imageio.get_reader(video_source, 'ffmpeg')
-
+    cap = cv2.VideoCapture(video_source)
     i = 0
     frames = np.zeros((30, 160, 160, 3), dtype=np.float16)
     old = []
     j = 0
 
-    for frame in vid.iter_data():
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert imageio frame to OpenCV format
-
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        if i > 29:
-            ysdatav2 = np.zeros((1, 30, 160, 160, 3), dtype=np.float16)
-            ysdatav2[0][:][:] = frames
-            predaction = pred_fight(model, ysdatav2, acuracy=0.96)
-            if predaction[0]:
-                fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                vio = cv2.VideoWriter("./videos/output-"+str(j)+".avi", fourcc, 10.0, (frame.shape[1], frame.shape[0]))
-                print('Violence detected here ...')
-                print("timestamp is: ", i * vid.get_meta_data()['duration'] / len(vid))
-                for x in old:
-                    vio.write(x)
-                vio.release()
-                cv2.putText(frame, 
-                            'Violence Detected!!!', 
-                            (100, 200), 
-                            font, 3, 
-                            (238, 75, 43), 
-                            5, 
-                            cv2.LINE_4)
-                 # Store violence detection information
-                # detection_info = {
-                #     'timestamp': str(cap.get(cv2.CAP_PROP_POS_MSEC)),
-                #     'video_url': f'/videos/output-{len(violence_detections)}.mp4'
-                # }
-                # violence_detections.append(detection_info)
-
-                # Update the sidebar dynamically
-                # update_sidebar()        
-            i = 0
-            j += 1
-            frames = np.zeros((30, 160, 160, 3), dtype=np.float16)
-            old = []
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if ret:
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            if i > 29:
+                ysdatav2 = np.zeros((1, 30, 160, 160, 3), dtype=np.float16)
+                ysdatav2[0][:][:] = frames
+                predaction = pred_fight(model, ysdatav2, acuracy=0.96)
+                if predaction[0]:
+                    cv2.imshow('video', frame)
+                    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                    vio = cv2.VideoWriter("./videos/output-"+str(j)+".avi", fourcc, 10.0, (frame.shape[1], frame.shape[0]))
+                    print('Violence detected here ...')
+                    print("timestamp is: ", str(cap.get(cv2.CAP_PROP_POS_MSEC)))
+                    for x in old:
+                        vio.write(x)
+                    vio.release()
+                    cv2.putText(frame, 
+                                'Violence Detected!!!', 
+                                (100, 200), 
+                                font, 3, 
+                                (238, 75, 43), 
+                                5, 
+                                cv2.LINE_4)            
+                i = 0
+                j += 1
+                frames = np.zeros((30, 160, 160, 3), dtype=np.float16)
+                old = []
+            else:
+                frm = resize(frame, (160, 160))
+                old.append(frame)
+                fshape = frame.shape
+                fheight = fshape[0]
+                fwidth = fshape[1]
+                frm = np.expand_dims(frm, axis=0)
+                if np.max(frm) > 1:
+                    frm = frm / 255.
+                frames[i][:] = frm
+                i += 1
         else:
-            frm = resize(frame, (160, 160))
-            old.append(frame)
-            frm = np.expand_dims(frm, axis=0)
-            if np.max(frm) > 1:
-                frm = frm / 255.
-            frames[i][:] = frm
-            i += 1
+            break
 
         frame = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-    vid.close()
+        key = cv2.waitKey(20)
+        if key == 27:
+            break
+
+    cap.release()
 
 # def update_sidebar():
 #     global violence_detections
