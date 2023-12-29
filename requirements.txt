@@ -6,3 +6,4 @@ pymongo
 scikit_image
 tensorflow
 Gunicorn
+python-socketio
