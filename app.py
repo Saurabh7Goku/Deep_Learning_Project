@@ -10,7 +10,7 @@ import imageio
 from fun.invisibleMinds import *
 
 app = Flask(__name__)
-# app.config['SECRET_KEY'] = '4cf659de047f5ec423725d1574c942e9'
+app.config['SECRET_KEY'] = '4cf659de047f5ec423725d1574c942e9'
 violence_detections = []
 
 # Your model loading code here
