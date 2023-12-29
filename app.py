@@ -64,7 +64,7 @@ def gen():
     old = []
     j = 0
 
-    while cap.isOpened():
+    while cap is not None and cap.isOpened():
         font = cv2.FONT_HERSHEY_SIMPLEX
         ret, frame = cap.read()
         if ret:
