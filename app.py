@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '4cf659de047f5ec423725d1574c942e9'
 violence_detections = []
 
 # Your model loading code here
-model = videoFightModel3(tf, wight='invisibleMinds.hdfs')
+model = videoFightModel2(tf, wight='invisibleMinds.hdfs')
 
 class VideoForm(FlaskForm):
     video_url = StringField('Video URL')
