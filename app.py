@@ -43,7 +43,7 @@ def gen(video_source, model):
                 ysdatav2[0][:][:] = frames
                 predaction = pred_fight(model, ysdatav2, acuracy=0.96)
                 if predaction[0]:
-                    cv2.imshow('video', frame)
+                    # cv2.imshow('video', frame)
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     vio = cv2.VideoWriter("./videos/output-"+str(j)+".avi", fourcc, 10.0, (frame.shape[1], frame.shape[0]))
                     print('Violence detected here ...')
